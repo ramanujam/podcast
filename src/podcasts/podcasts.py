@@ -55,7 +55,7 @@ def __get_recommendations(feed):
     """
     get recommendations from feed
     """
-    res = {}
+    res = {"title": [], "url": []}
     for entry in feed['entries']:
         for content_type in entry["content"]:
             if "html" in content_type["type"]:
@@ -63,14 +63,15 @@ def __get_recommendations(feed):
                 try:
                     for item in soup.ul.findAll("li"):
                         title, url = __parse_content(item)
-                        res[title] = url
+                        res["title"].append(title)
+                        res["url"].append(url)
                 except AttributeError:
                     pass
 
     with open("../../data/recommendations.json", "w+") as file_pointer:
         json.dump(res, file_pointer)
 
-    return res
+    return len(res.keys())
 
 
 def __parse_content(item):
