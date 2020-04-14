@@ -8,6 +8,19 @@ import feedparser
 from bs4 import BeautifulSoup
 
 
+def recommendations(url, path="../../data/after_hours.json"):
+    """
+    Find the recommendations
+
+    """
+    feed = __get_feed(url, path)
+
+    if 'entries' not in feed:
+        raise Exception("No entries found, has the structure changed?")
+
+    return __get_recommendations(feed)
+
+
 def __save_feed(url, path):
     """
     Save the RSS Feed data
@@ -24,7 +37,7 @@ def __save_feed(url, path):
     return "Downloaded"
 
 
-def get_feed(url, path):
+def __get_feed(url, path):
     """
     Get the feed from local store
 
@@ -38,29 +51,21 @@ def get_feed(url, path):
         raise ConnectionError("Can't parse and load feed")
 
 
-def recommendations(url, path="../../data/after_hours.json"):
-    """
-    Find the recommendations
-
-    """
-    feed = get_feed(url, path)
-
-    if 'entries' not in feed:
-        print("No entries found, has the structure changed?")
-        return {}
-
-    return __get_recommendations(feed)
-
-
 def __get_recommendations(feed):
     """
     get recommendations from feed
     """
-
+    res = {}
     for entry in feed['entries']:
         for content_type in entry["content"]:
-            title, url = __parse_content(content_type)
-            res[title] = url
+            if "html" in content_type["type"]:
+                soup = BeautifulSoup(content_type['value'], 'html.parser')
+                try:
+                    for item in soup.ul.findAll("li"):
+                        title, url = __parse_content(item)
+                        res[title] = url
+                except AttributeError:
+                    pass
 
     with open("../../data/recommendations.json", "w+") as file_pointer:
         json.dump(res, file_pointer)
@@ -68,27 +73,22 @@ def __get_recommendations(feed):
     return res
 
 
-def __parse_content(content_type):
+def __parse_content(item):
     """
 
     """
     title = ""
     url = None
 
-    if "html" in content_type["type"]:
-        soup = BeautifulSoup(content_type['value'], 'html.parser')
-        if not soup.ul:
-            return title, url
-        for item in soup.ul.findAll("li"):
-            try:
-                title = item.a.string
-                url = item.a['href']
-                print(f'{item.a.string}: {item.a["href"]}')
-            except AttributeError:
-                title = item.string
-                print(f'{item.string}: No URL')
+    try:
+        title = item.a.string
+        url = item.a['href']
+        print(f'{item.a.string}: {item.a["href"]}')
+    except AttributeError:
+        title = item.string
+        print(f'{item.string}: No URL')
 
     return title, url
 
 
-res = recommendations(url="http://feeds.harvardbusiness.org/harvardbusiness/after-hours")
+recommendations(url="http://feeds.harvardbusiness.org/harvardbusiness/after-hours")
