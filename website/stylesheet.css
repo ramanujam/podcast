@@ -37,6 +37,22 @@ h2 {
   color: #FB667A;
 }
 
+h3 {
+  font-size:1em;
+  font-weight: 200;
+  text-align: center;
+  display: block;
+  line-height:1em;
+  padding-bottom: 2em;
+  color: #F1C40F;
+}
+
+h3 a {
+  font-weight: 700;
+  color: #F1C40F;
+  text-decoration: none;
+}
+
 h2 a {
   font-weight: 700;
   text-transform: uppercase;
