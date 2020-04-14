@@ -26,7 +26,8 @@ classifiers = [
     "Programming Language :: Python :: 3.7",
 ]
 [tool.poetry.dependencies]
-# List project dependencies here
+feedparser = "^5.2.1"
+beautifulsoup4 = "^4.9.0"
 
 [tool.poetry.dev-dependencies]
 bump2version = "^0.5.0"
@@ -35,7 +36,7 @@ wheel = "^0.32.1"
 watchdog = "^0.9.0"
 flake8 = "^3.5.0"
 tox = "^3.5.2"
-coverage = "^4.5.1"
+coverage = "^4"
 Sphinx = "^1.8.1"
 twine = "^1.12.1"
 
